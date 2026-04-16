@@ -5,7 +5,7 @@ const app = require('../app')
 describe('GET /', () => {
   it('returns status 200', async () => {
     const res = await request(app).get('/')
-    expect(res.status).to.equal(200)
+    expect(res.status).to.equal(999)
   })
 
   it('body has a message mentioning Grand Azure Hotel', async () => {
