@@ -2,67 +2,71 @@ const request = require('supertest')
 const { expect } = require('chai')
 const app = require('../app')
 
-// ---------------------------------------------------------------
-// TIP: Use AI to help you generate test cases!
-// Paste your app.js into your AI tool of choice and ask it to
-// write Mocha + Chai + Supertest tests for each route.
-// Review what it generates, make sure you understand each test,
-// and adjust as needed before running them.
-// ---------------------------------------------------------------
-
-// Minimum requirement: at least 6 tests total across all routes.
-
-// ---------------------------------------------------------------
-// GET /
-// ---------------------------------------------------------------
-// Ideas:
-//   - Should return status 200
-//   - Response body should have a "message" property
-//   - Message should include the hotel name
-
 describe('GET /', () => {
+  it('returns status 200', async () => {
+    const res = await request(app).get('/')
+    expect(res.status).to.equal(200)
+  })
 
+  it('body has a message mentioning Grand Azure Hotel', async () => {
+    const res = await request(app).get('/')
+    expect(res.body).to.have.property('message')
+    expect(res.body.message).to.include('Grand Azure Hotel')
+  })
 })
-
-// ---------------------------------------------------------------
-// GET /rooms
-// ---------------------------------------------------------------
-// Ideas:
-//   - Should return status 200
-//   - Should return an array
-//   - Should return the correct number of rooms
-//   - Each room should have: id, name, type, pricePerNight, available
-//   - ?type=suite should return only suite rooms
-//   - ?type=deluxe should return only deluxe rooms
-//   - ?type=standard should return only standard rooms
-//   - Filtering by a type that doesn't exist should return an empty array
 
 describe('GET /rooms', () => {
+  it('returns 200 and an array of 7 rooms', async () => {
+    const res = await request(app).get('/rooms')
+    expect(res.status).to.equal(200)
+    expect(res.body).to.be.an('array').with.lengthOf(7)
+  })
 
+  it('every room has id, name, type, pricePerNight, available', async () => {
+    const res = await request(app).get('/rooms')
+    res.body.forEach(room => {
+      expect(room).to.include.all.keys('id', 'name', 'type', 'pricePerNight', 'available')
+    })
+  })
+
+  it('?type=suite returns only suite rooms', async () => {
+    const res = await request(app).get('/rooms?type=suite')
+    expect(res.status).to.equal(200)
+    expect(res.body).to.be.an('array').with.lengthOf.above(0)
+    res.body.forEach(room => expect(room.type).to.equal('suite'))
+  })
+
+  it('?type=nonsense returns an empty array', async () => {
+    const res = await request(app).get('/rooms?type=nonsense')
+    expect(res.status).to.equal(200)
+    expect(res.body).to.be.an('array').with.lengthOf(0)
+  })
 })
-
-// ---------------------------------------------------------------
-// GET /rooms/:id
-// ---------------------------------------------------------------
-// Ideas:
-//   - Should return status 200 for a valid id
-//   - Should return the correct room name for a given id
-//   - Should return status 404 for an id that doesn't exist
-//   - 404 response should include an "error" property
 
 describe('GET /rooms/:id', () => {
+  it('returns 200 and the correct room for a valid id', async () => {
+    const res = await request(app).get('/rooms/3')
+    expect(res.status).to.equal(200)
+    expect(res.body).to.include({ id: 3, name: 'Deluxe King' })
+  })
 
+  it('returns 404 with an error property for an unknown id', async () => {
+    const res = await request(app).get('/rooms/999')
+    expect(res.status).to.equal(404)
+    expect(res.body).to.have.property('error')
+  })
 })
 
-// ---------------------------------------------------------------
-// GET /available
-// ---------------------------------------------------------------
-// Ideas:
-//   - Should return status 200
-//   - Should return an array
-//   - Every room in the response should have available === true
-//   - Should not include any unavailable rooms
-
 describe('GET /available', () => {
+  it('returns 200 and an array', async () => {
+    const res = await request(app).get('/available')
+    expect(res.status).to.equal(200)
+    expect(res.body).to.be.an('array')
+  })
 
+  it('every returned room has available === true', async () => {
+    const res = await request(app).get('/available')
+    expect(res.body.length).to.be.above(0)
+    res.body.forEach(room => expect(room.available).to.equal(true))
+  })
 })

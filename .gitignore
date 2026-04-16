@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Coverage / test output
+coverage/
+.nyc_output/
+
+# Build output
+dist/
+build/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# npm / package manager
+.npm/
+.pnpm-debug.log*
