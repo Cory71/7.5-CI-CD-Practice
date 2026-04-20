@@ -42,4 +42,15 @@ app.get('/available', (req, res) => {
   res.json(available)
 })
 
+// POST /rooms - add a new room
+app.post('/rooms', (req, res) => {
+  const requiredFields = ['id', 'name', 'type', 'pricePerNight', 'available']
+  const missing = requiredFields.some(field => req.body[field] === undefined)
+  if (missing) {
+    return res.status(400).json({ error: 'Missing required fields' })
+  }
+  rooms.push(req.body)
+  res.status(201).json(req.body)
+})
+
 module.exports = app
