@@ -49,8 +49,10 @@ app.post('/rooms', (req, res) => {
   if (missing) {
     return res.status(400).json({ error: 'Missing required fields' })
   }
-  rooms.push(req.body)
-  res.status(201).json(req.body)
+  const { id, name, type, pricePerNight, available } = req.body
+  const newRoom = { id, name, type, pricePerNight, available }
+  rooms.push(newRoom)
+  res.status(201).json(newRoom)
 })
 
 module.exports = app

@@ -31,3 +31,6 @@ Thumbs.db
 # npm / package manager
 .npm/
 .pnpm-debug.log*
+
+# Planning docs
+docs/
