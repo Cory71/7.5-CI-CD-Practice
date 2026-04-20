@@ -70,3 +70,27 @@ describe('GET /available', () => {
     res.body.forEach(room => expect(room.available).to.equal(true))
   })
 })
+
+describe('POST /rooms', () => {
+  it('returns 201 and the new room when all fields are provided', async () => {
+    const newRoom = { id: 8, name: 'Budget Single', type: 'standard', pricePerNight: 80, available: true }
+    const res = await request(app).post('/rooms').send(newRoom)
+    expect(res.status).to.equal(201)
+    expect(res.body).to.deep.include(newRoom)
+  })
+
+  it('the new room appears in GET /rooms after being added', async () => {
+    const room = { id: 9, name: 'Test Room', type: 'standard', pricePerNight: 99, available: true }
+    await request(app).post('/rooms').send(room)
+    const res = await request(app).get('/rooms')
+    const found = res.body.find(r => r.id === 9)
+    expect(found).to.exist
+    expect(found.name).to.equal('Test Room')
+  })
+
+  it('returns 400 with an error property when a required field is missing', async () => {
+    const res = await request(app).post('/rooms').send({ id: 10, name: 'Incomplete Room' })
+    expect(res.status).to.equal(400)
+    expect(res.body).to.have.property('error')
+  })
+})
